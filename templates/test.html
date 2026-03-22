@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTTS Tester</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=v12">
+  <style>
+    body { background: #011f14; color: #fff; font-family: 'Inter', sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; }
+    h1 { color: #F9DC1C; font-size: 1.4em; margin-bottom: 2px; }
+    .subtitle { color: #aaa; font-size: 0.82em; margin-bottom: 24px; }
+    .panel { background: #012a1a; border: 1px solid #027B5B; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+    h2 { font-size: 0.9em; color: #F9DC1C; text-transform: uppercase; letter-spacing: 0.7px; margin: 0 0 14px 0; }
+    .row { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+    label { color: #9ca3af; font-size: 0.84em; min-width: 110px; }
+    input[type=number], select, input[type=text] { background: #014d38; border: 1px solid #027B5B; color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 0.9em; }
+    input[type=number] { width: 70px; }
+    select.wide, input.wide { width: 200px; }
+    .btn { background: #027B5B; border: none; color: #fff; padding: 9px 20px; border-radius: 6px; font-size: 0.9em; cursor: pointer; font-weight: bold; }
+    .btn:hover { background: #029e75; }
+    .btn-sm { background: #014d38; border: 1px solid #027B5B; color: #4ade80; cursor: pointer; border-radius: 4px; padding: 4px 10px; font-size: 0.82em; }
+    .remove-btn { background: #7f1d1d; border: none; color: #f87171; cursor: pointer; border-radius: 4px; padding: 3px 8px; font-size: 0.82em; }
+    .section-div { border-top: 1px solid #027B5B; margin: 14px 0 10px 0; padding-top: 12px; }
+    .section-lbl { color: #9ca3af; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.8px; }
+    .goal-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; font-size: 0.86em; flex-wrap: wrap; }
+    .social-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .social-row label { min-width: unset; }
+    /* Result card */
+    .result-card { background: #023d28; border: 1px solid #027B5B; border-radius: 10px; padding: 16px; margin-top: 14px; }
+    .pts-badge { display: inline-block; font-size: 1.5em; font-weight: bold; padding: 6px 16px; border-radius: 6px; margin-bottom: 8px; }
+    .pts-pos { background: #166534; color: #4ade80; }
+    .pts-neg { background: #7f1d1d; color: #f87171; }
+    .pts-zero { background: #374151; color: #9ca3af; }
+    .rule-line { color: #aaa; font-size: 0.88em; margin-bottom: 4px; }
+    .mod-line { color: #fbbf24; font-size: 0.84em; }
+    .flags { margin-top: 8px; font-size: 0.8em; color: #6ee7b7; }
+    .flag { display: inline-block; margin-right: 8px; background: #014d38; border-radius: 4px; padding: 2px 7px; margin-bottom: 4px; }
+    /* Live monitor */
+    #live-status { margin-top: 14px; font-size: 0.9em; }
+    .live-score { font-size: 1.4em; font-weight: bold; text-align: center; margin: 8px 0; color: #F9DC1C; }
+    .live-info { color: #aaa; font-size: 0.82em; text-align: center; }
+    .live-pts { display: inline-block; font-size: 1.2em; font-weight: bold; padding: 5px 14px; border-radius: 6px; margin: 6px 0; }
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4ade80; margin-right: 6px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .tag-top { background: #1e3a5f; color: #60a5fa; border-radius: 4px; padding: 2px 8px; font-size: 0.8em; }
+    .tag-bottom { background: #3b1f1f; color: #f87171; border-radius: 4px; padding: 2px 8px; font-size: 0.8em; }
+    #manual-result { display: none; }
+    .loading { color: #9ca3af; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <h1>🧪 BTTS Tester</h1>
+  <p class="subtitle">Manual scoring simulator + live game monitor</p>
+
+  <!-- ── SECTION 1: LIVE GAME MONITOR ─────────────────────────── -->
+  <div class="panel">
+    <h2>📡 Live Game Monitor</h2>
+    <div class="row">
+      <label>Bet group</label>
+      <select id="bet-group">
+        <option value="top">Top bet</option>
+        <option value="bottom">Bottom bet</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>Pick a game</label>
+      <select id="live-game-select" class="wide" style="width:340px;">
+        <option value="">— Loading matches —</option>
+      </select>
+      <button class="btn-sm" onclick="loadLiveGames()">↺ Refresh</button>
+    </div>
+    <div class="row">
+      <label>Group-mate 1</label>
+      <select id="lm1" style="width:100px;">
+        <option value="none">No BTTS</option>
+        <option value="btts">Had BTTS</option>
+      </select>
+      <label style="min-width:80px;">Group-mate 2</label>
+      <select id="lm2" style="width:100px;">
+        <option value="none">No BTTS</option>
+        <option value="btts">Had BTTS</option>
+      </select>
+    </div>
+    <button class="btn" onclick="startMonitor()">Start monitoring</button>
+    <button class="btn-sm" id="stop-btn" style="display:none; margin-left:8px;" onclick="stopMonitor()">Stop</button>
+
+    <div id="live-status"></div>
+  </div>
+
+  <!-- ── SECTION 2: MANUAL SIMULATOR ──────────────────────────── -->
+  <div class="panel">
+    <h2>🎮 Manual Simulator</h2>
+    <div class="row">
+      <label>State</label>
+      <select id="state" class="wide">
+        <option value="pre">Pre-match</option>
+        <option value="in" selected>In play</option>
+        <option value="post">Full time</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>Home team</label>
+      <input type="text" id="home_name" value="Celtic" class="wide">
+    </div>
+    <div class="row">
+      <label>Away team</label>
+      <input type="text" id="away_name" value="Rangers" class="wide">
+    </div>
+    <div class="section-div"><span class="section-lbl">Goals</span></div>
+    <div id="goals-list"></div>
+    <button class="btn-sm" onclick="addGoal()">+ Add goal</button>
+    <div class="section-div"><span class="section-lbl">Red Cards</span></div>
+    <div class="row">
+      <label>Home reds</label>
+      <input type="number" id="home_reds" value="0" min="0" max="5">
+      <label style="min-width:70px;">Away reds</label>
+      <input type="number" id="away_reds" value="0" min="0" max="5">
+    </div>
+    <div class="section-div"><span class="section-lbl">Group-mates (for Coster / Clincher)</span></div>
+    <div class="social-row">
+      <input type="checkbox" id="mate1_btts">
+      <label for="mate1_btts">Group-mate 1 had BTTS</label>
+      <input type="checkbox" id="mate2_btts">
+      <label for="mate2_btts">Group-mate 2 had BTTS</label>
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn" onclick="calculate()">Calculate</button>
+    </div>
+    <div id="manual-result"></div>
+  </div>
+
+<script>
+// ── LIVE MONITOR ────────────────────────────────────────────────
+let monitorTimer = null;
+
+async function loadLiveGames() {
+  const sel = document.getElementById('live-game-select');
+  sel.innerHTML = '<option>Loading…</option>';
+  try {
+    const r = await fetch('/api/upcoming_matches');
+    const games = await r.json();
+    const live = games.filter(g => !['FT','FT-AET','FT-Pens','Sched','TBD','Canc','PPD'].includes(g.status));
+    const upcoming = games.filter(g => ['Sched','TBD'].includes(g.status)).slice(0, 20);
+    const all = [...live, ...upcoming];
+    if (!all.length) { sel.innerHTML = '<option>No live games right now</option>'; return; }
+    sel.innerHTML = '';
+    if (live.length) {
+      const og = document.createElement('optgroup'); og.label = '🔴 Live now';
+      live.forEach(g => {
+        const o = document.createElement('option');
+        o.value = g.eventId;
+        o.textContent = `${g.homeTeam} vs ${g.awayTeam} (${g.status})`;
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    }
+    if (upcoming.length) {
+      const og = document.createElement('optgroup'); og.label = '🕐 Upcoming';
+      upcoming.forEach(g => {
+        const o = document.createElement('option');
+        o.value = g.eventId;
+        o.textContent = `${g.homeTeam} vs ${g.awayTeam}`;
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    }
+  } catch(e) { sel.innerHTML = '<option>Error loading matches</option>'; }
+}
+
+function startMonitor() {
+  stopMonitor();
+  fetchLive();
+  monitorTimer = setInterval(fetchLive, 30000);
+  document.getElementById('stop-btn').style.display = 'inline-block';
+}
+
+function stopMonitor() {
+  if (monitorTimer) { clearInterval(monitorTimer); monitorTimer = null; }
+  document.getElementById('stop-btn').style.display = 'none';
+}
+
+async function fetchLive() {
+  const eventId = document.getElementById('live-game-select').value;
+  const group = document.getElementById('bet-group').value;
+  const m1btts = document.getElementById('lm1').value === 'btts';
+  const m2btts = document.getElementById('lm2').value === 'btts';
+  const bothMates = m1btts && m2btts;
+  const statusEl = document.getElementById('live-status');
+  if (!eventId) { statusEl.innerHTML = '<p class="loading">Select a game first.</p>'; return; }
+  statusEl.innerHTML = '<p class="loading">Fetching…</p>';
+  try {
+    const r = await fetch(`/api/match/${eventId}`);
+    const d = await r.json();
+    const hs = d.homeScore ?? 0;
+    const as_ = d.awayScore ?? 0;
+    const state = d.state || 'pre';
+    const btts = hs > 0 && as_ > 0;
+    const isDonut = hs === 0 && as_ === 0 && state !== 'pre';
+    const isButlerCheck = !btts && (hs > 0 || as_ > 0);
+    const coster = isButlerCheck && !isDonut && bothMates && state !== 'pre';
+    const clincher = d.btts90plus && bothMates;
+    let pts = d.points ?? null;
+    let mods = (d.modifiers || []).slice();
+    if (coster) { pts = (pts||0) - 1; mods = [...mods, ['Coster', -1]]; }
+    if (clincher) { pts = (pts||0) + 1; mods = [...mods, ['Cash Clincher', +1]]; }
+
+    const ptsCls = pts > 0 ? 'pts-pos' : pts < 0 ? 'pts-neg' : 'pts-zero';
+    const ptsStr = pts !== null && state !== 'pre' ? (pts >= 0 ? '+' : '') + pts + ' pts' : '—';
+    const groupTag = `<span class="${group === 'top' ? 'tag-top' : 'tag-bottom'}">${group === 'top' ? 'Top bet' : 'Bottom bet'}</span>`;
+    const liveDot = state === 'in' ? `<span class="status-dot"></span>` : '';
+    const stateStr = state === 'in' ? 'In play' : state === 'post' ? 'Full time' : 'Not started';
+    const clock = d.clock ? ` · ${d.clock}'` : '';
+
+    let html = `
+      <div class="result-card">
+        <div class="live-info">${groupTag} &nbsp;${liveDot}${stateStr}${clock}</div>
+        <div class="live-score">${d.homeTeam ?? 'Home'} ${hs} – ${as_} ${d.awayTeam ?? 'Away'}</div>
+        <div style="text-align:center;"><span class="live-pts ${ptsCls}">${ptsStr}</span></div>
+        <div class="rule-line" style="text-align:center;">${d.baseRule || ''}</div>
+    `;
+    if (mods.length) html += mods.map(m=>`<div class="mod-line" style="text-align:center;">${m[0]} (${m[1]>=0?'+':''}${m[1]})</div>`).join('');
+    html += `<div class="live-info" style="margin-top:8px;">Refreshes every 30s · Last: ${new Date().toLocaleTimeString('en-GB')}</div>`;
+    html += `</div>`;
+    statusEl.innerHTML = html;
+  } catch(e) { statusEl.innerHTML = `<p class="loading">Error: ${e.message}</p>`; }
+}
+
+// ── MANUAL SIMULATOR ────────────────────────────────────────────
+let goalId = 0;
+function addGoal(team='home', period=1, minute=45, type='goal') {
+  const id = goalId++;
+  const div = document.createElement('div');
+  div.className = 'goal-row'; div.id = 'goal-' + id;
+  div.innerHTML = `
+    <select id="g${id}_team">
+      <option value="home" ${team==='home'?'selected':''}>Home</option>
+      <option value="away" ${team==='away'?'selected':''}>Away</option>
+    </select>
+    <select id="g${id}_type">
+      <option value="goal" ${type==='goal'?'selected':''}>Goal</option>
+      <option value="own-goal" ${type==='own-goal'?'selected':''}>Own Goal</option>
+    </select>
+    <span style="color:#9ca3af;font-size:0.82em;">Period</span>
+    <select id="g${id}_period">
+      <option value="1" ${period===1?'selected':''}>1st half</option>
+      <option value="2" ${period===2?'selected':''}>2nd half</option>
+      <option value="3" ${period===3?'selected':''}>Extra time</option>
+    </select>
+    <span style="color:#9ca3af;font-size:0.82em;">Min</span>
+    <input type="number" id="g${id}_min" value="${minute}" min="1" max="120" style="width:56px;">
+    <button class="remove-btn" onclick="document.getElementById('goal-${id}').remove()">✕</button>
+  `;
+  document.getElementById('goals-list').appendChild(div);
+}
+
+function calculate() {
+  const state = document.getElementById('state').value;
+  const homeName = document.getElementById('home_name').value || 'Home';
+  const awayName = document.getElementById('away_name').value || 'Away';
+  const homeReds = parseInt(document.getElementById('home_reds').value) || 0;
+  const awayReds = parseInt(document.getElementById('away_reds').value) || 0;
+  const mate1 = document.getElementById('mate1_btts').checked;
+  const mate2 = document.getElementById('mate2_btts').checked;
+  const bothMates = mate1 && mate2;
+
+  const goals = [];
+  document.querySelectorAll('[id^="goal-"]').forEach(row => {
+    const n = row.id.replace('goal-','');
+    if (!document.getElementById(`g${n}_team`)) return;
+    goals.push({
+      team: document.getElementById(`g${n}_team`).value,
+      type: document.getElementById(`g${n}_type`).value,
+      period: parseInt(document.getElementById(`g${n}_period`).value),
+      minute: parseInt(document.getElementById(`g${n}_min`).value) || 1,
+    });
+  });
+
+  const scoreH = goals.filter(g=>g.period<=2&&((g.team==='home'&&g.type!=='own-goal')||(g.team==='away'&&g.type==='own-goal'))).length;
+  const scoreA = goals.filter(g=>g.period<=2&&((g.team==='away'&&g.type!=='own-goal')||(g.team==='home'&&g.type==='own-goal'))).length;
+  const total = scoreH + scoreA;
+  const btts = scoreH > 0 && scoreA > 0;
+  const home1h = goals.filter(g=>g.period===1&&((g.team==='home'&&g.type!=='own-goal')||(g.team==='away'&&g.type==='own-goal'))).length;
+  const away1h = goals.filter(g=>g.period===1&&((g.team==='away'&&g.type!=='own-goal')||(g.team==='home'&&g.type==='own-goal'))).length;
+  const btts1h = home1h > 0 && away1h > 0;
+  const hasOg = goals.some(g=>g.type==='own-goal'&&g.period<=2);
+  const isButler = (scoreH>=5&&scoreA===0)||(scoreA>=5&&scoreH===0);
+  const isDonut = scoreH===0&&scoreA===0&&state!=='pre';
+  const live = state==='in';
+
+  let cashClincher = false;
+  if (btts && state==='post') {
+    const sorted = goals.filter(g=>g.period<=2).sort((a,b)=>a.period-b.period||a.minute-b.minute);
+    let hs=0,as_=0;
+    for (const g of sorted) {
+      if ((g.team==='home'&&g.type!=='own-goal')||(g.team==='away'&&g.type==='own-goal')) hs++;
+      else as_++;
+      if (hs>0&&as_>0){ if(g.minute>=90) cashClincher=true; break; }
+    }
+  }
+
+  let base=0, baseRule='No score yet';
+  if (state!=='pre'||total>0) {
+    if (scoreH===0&&scoreA===0&&state!=='pre') { base=-1; baseRule=live?'Double Doughnut incoming, -1 pt':'Double Doughnut, -1 pt'; }
+    else if (isButler) { base=-2; baseRule=`Super Butler! ${Math.max(scoreH,scoreA)}-0: one-sided pumping, -2 pts`; }
+    else if (scoreH===3&&scoreA===3) { base=-3; baseRule=live?'Exact 3-3: six goals and the UGSS is punishing you, -3 pts':'Exact 3-3: six goals and the UGSS punishes you, -3 pts'; }
+    else if (total>=5&&btts) { base=5; baseRule=btts1h?`Goal fest! ${total} goals, both scored in 1st half: UGSS maximum, +5 pts`:`Goal fest! ${total} goals: UGSS maximum, +5 pts`; }
+    else if (btts1h) { base=3; baseRule=live?'Both scored in 1st half: beating standard BTTS, +3 pts':'Both scored in 1st half: beats standard BTTS, +3 pts'; }
+    else if (scoreH===1&&scoreA===1&&hasOg) { base=4; baseRule='Rare UGSS bonus: 1-1 with an Own Goal, +4 pts'; }
+    else if (btts) { base=2; baseRule=live?'Both teams scoring: BTTS on, +2 pts':'Both teams scored: BTTS, +2 pts'; }
+    else if (total>0) {
+      base=1;
+      const label=Math.min(scoreH,scoreA)===0?`Butler (${Math.max(scoreH,scoreA)}-0)`:'One team scored';
+      baseRule=state==='post'?`${label}: one team scored, +1 pt`:`${label}: +1 pt for now, still waiting for BTTS`;
+    }
+  }
+
+  const mods=[];
+  const maxReds=Math.max(homeReds,awayReds);
+  if (maxReds>=3) mods.push(['3 reds for one team: chaos bonus',+2]);
+  else if (maxReds>=2) mods.push(['2 reds for one team',-2]);
+  const isMyButler=!btts&&total>0&&!isDonut;
+  if (isMyButler&&bothMates) mods.push(['Coster',-1]);
+  if (cashClincher&&bothMates) mods.push(['Cash Clincher',+1]);
+  const totalPts=base+mods.reduce((s,m)=>s+m[1],0);
+
+  const flags=[];
+  if (btts) flags.push('✅ BTTS');
+  if (btts1h) flags.push('⚡ 1st half BTTS');
+  if (cashClincher) flags.push('💰 Cash Clincher');
+  if (isDonut) flags.push('🟤 Double Doughnut');
+  if (isButler) flags.push('🥈 Super Butler');
+  if (hasOg) flags.push('🤦 Own Goal');
+
+  const ptsCls=totalPts>0?'pts-pos':totalPts<0?'pts-neg':'pts-zero';
+  const ptsStr=(totalPts>=0?'+':'')+totalPts+' pts';
+  const scoreStr=state==='pre'?'Not started':`${homeName} ${scoreH} – ${scoreA} ${awayName}`;
+
+  let html=`<div class="result-card">
+    <div class="live-info">${scoreStr} · ${state==='pre'?'Pre-match':state==='in'?'In play':'Full time'}</div>
+    <div style="text-align:center;margin:8px 0;"><span class="pts-badge ${ptsCls}">${ptsStr}</span></div>
+    <div class="rule-line">${baseRule||'—'}</div>
+  `;
+  if (mods.length) html+=mods.map(m=>`<div class="mod-line">${m[0]} (${m[1]>=0?'+':''}${m[1]})</div>`).join('');
+  if (flags.length) html+=`<div class="flags">${flags.map(f=>`<span class="flag">${f}</span>`).join('')}</div>`;
+  html+='</div>';
+
+  const el=document.getElementById('manual-result');
+  el.innerHTML=html; el.style.display='block';
+}
+
+// init
+addGoal('home',1,23); addGoal('away',2,67);
+loadLiveGames();
+</script>
+</body>
+</html>

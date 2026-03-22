@@ -1,0 +1,50 @@
+[
+  {
+    "date": "2026-03-21",
+    "games": {
+      "Coypoo": {
+        "eventId": "740905",
+        "homeTeam": "Fulham",
+        "awayTeam": "Burnley",
+        "score": "3-1",
+        "outcome": "btts"
+      },
+      "Doxy": {
+        "eventId": "745615",
+        "homeTeam": "Plymouth Argyle",
+        "awayTeam": "Huddersfield Town",
+        "score": "3-1",
+        "outcome": "btts"
+      },
+      "Ginger": {
+        "eventId": "sf-14035628",
+        "homeTeam": "Alloa Athletic",
+        "awayTeam": "Inverness Caledonian Thistle",
+        "score": "1-1",
+        "outcome": "btts"
+      },
+      "Kenz": {
+        "eventId": "745061",
+        "homeTeam": "Watford",
+        "awayTeam": "Leicester City",
+        "score": "0-0",
+        "outcome": "donut"
+      },
+      "Kooks": {
+        "eventId": "745064",
+        "homeTeam": "Sheffield United",
+        "awayTeam": "Wrexham",
+        "score": "1-2",
+        "outcome": "btts"
+      },
+      "Tartz": {
+        "eventId": "752143",
+        "homeTeam": "Altrincham",
+        "awayTeam": "Southend United",
+        "score": "1-0",
+        "outcome": "butler+coster",
+        "notes": "Butler +1, Coster -1 = 0 pts net"
+      }
+    }
+  }
+]

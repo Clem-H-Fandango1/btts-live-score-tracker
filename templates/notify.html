@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Notification Setup</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ app_version }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Telegram Notification Setup</h1>
+    <p class="description">
+      Use this page to enable Telegram notifications for match events.
+    </p>
+    <ol>
+      <li>
+        <strong>Create a bot</strong> via <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>:
+        send <code>/newbot</code>, follow prompts, then copy your <em>bot token</em>.
+      </li>
+      <li>
+        <strong>Create a Telegram group</strong> and <em>add your bot to the group</em>. Send any message in the group.
+      </li>
+      <li>
+        <strong>Find the chat ID</strong>: open
+        <code>https://api.telegram.org/bot&lt;your token&gt;/getUpdates</code> in a browser after sending the message.
+        In the JSON, look for <code>"chat":{"id": ... }</code> — that's your group chat ID (often negative, e.g. <code>-1001234567890</code>).
+        Alternatively, use <a href="https://t.me/RawDataBot" target="_blank" rel="noopener">@RawDataBot</a>.
+      </li>
+      <li>
+        <strong>Paste the values below</strong> and click <em>Save Telegram Settings</em>. The app will write them to <code>settings.json</code>.
+      </li>
+    </ol>
+
+    <div class="form-row">
+      <label for="token">Bot Token</label>
+      <input type="text" id="token" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11">
+    </div>
+    <div class="form-row">
+      <label for="chat_id">Chat ID</label>
+      <input type="text" id="chat_id" placeholder="-1001234567890">
+    </div>
+    <div class="button-row">
+      <button id="save-telegram">Save Telegram Settings</button>
+    </div>
+    <p id="save-status" style="display:none;"></p>
+
+<hr>
+<h2>Current Telegram Status</h2>
+<div id="status-panel" class="status-box">
+  <pre id="status-json" style="white-space:pre-wrap;"></pre>
+</div>
+<div class="button-row">
+  <button id="refresh-status">Refresh Status</button>
+</div>
+
+  </div>
+
+<hr>
+<div class="form-row">
+  <label for="test_text">Send a test message (optional)</label>
+  <input type="text" id="test_text" placeholder="BTTS Test Notification ✅">
+</div>
+<div class="button-row">
+  <button id="send-test">Send Test Notification</button>
+</div>
+<p id="test-status" style="display:none;"></p>
+
+<script src="{{ url_for('static', filename='js/notify.js') }}?v={{ app_version }}"></script>
+</body>
+</html>

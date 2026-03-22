@@ -1,0 +1,401 @@
+/*
+ * BTTS Match Tracker — Bet365-flavoured stylesheet v10
+ * Colours: #027B5B (green), #F9DC1C (yellow), #0b2e13 (deep bg)
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #0b2e13;
+  /*
+   * Subtle Celtic shamrock tile — SVG encoded inline.
+   * Opacity kept very low so it reads as texture, not wallpaper.
+   */
+  /* background tile is set dynamically by btts-bg.js */
+  background-repeat: repeat;
+  background-size: 80px 80px;
+  transition: opacity 1s ease;
+  color: #f5f5f5;
+}
+
+/* ── Header bar ───────────────────────────────────────── */
+.site-header {
+  background-color: #014d38;
+  border-bottom: 3px solid #F9DC1C;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+}
+
+.site-header .logo {
+  font-size: 1.35em;
+  font-weight: 900;
+  color: #F9DC1C;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.site-header .logo span {
+  color: #ffffff;
+  font-weight: 400;
+}
+
+.site-header .live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #c0392b;
+  color: #ffffff;
+  font-size: 0.72em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 3px;
+}
+
+.site-header .live-badge::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #ffffff;
+  border-radius: 50%;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* ── Page layout ──────────────────────────────────────── */
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 12px 32px;
+}
+
+/* ── Message hero bar ─────────────────────────────────── */
+.message-hero {
+  display: block;
+  text-align: center;
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #F9DC1C;
+  background-color: #013e2e;
+  border: 1px solid #027B5B;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  word-wrap: break-word;
+}
+
+/* ── Section headers (Top Bet / Bottom Bet) ───────────── */
+.group-section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #027B5B;
+  padding: 8px 14px;
+  border-radius: 4px 4px 0 0;
+  margin-bottom: 1px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: 800;
+  color: #F9DC1C;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ── Match strip (the main card) ──────────────────────── */
+.score-card {
+  background-color: #023f2b;
+  border: 1px solid #027B5B;
+  border-top: none;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: background-color 0.3s ease;
+  margin-bottom: 2px;
+  border-radius: 0;
+  position: relative;
+}
+
+.score-card:first-child { border-radius: 0; }
+.score-card:last-child  { border-radius: 0 0 4px 4px; }
+
+/* BTTS hit — glowing green strip */
+.score-card.btts-hit {
+  background-color: #0a5c32;
+  border-color: #22c55e;
+  box-shadow: inset 3px 0 0 #22c55e;
+}
+
+/* Game in progress, no BTTS yet — amber/yellow-green */
+.score-card.in-progress {
+  background-color: #2a3a10;
+  border-color: #a3c21a;
+  box-shadow: inset 3px 0 0 #a3c21a;
+}
+
+/* Full time, no BTTS — red */
+.score-card.btts-miss {
+  background-color: #3a0a0a;
+  border-color: #c0392b;
+  box-shadow: inset 3px 0 0 #c0392b;
+}
+
+/* ── Inside the strip ─────────────────────────────────── */
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Friend name pill */
+.friend-box {
+  font-size: 0.72em;
+  font-weight: 800;
+  color: #0b2e13;
+  background-color: #F9DC1C;
+  border-radius: 3px;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Match divider bar */
+.match-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 4px 0;
+}
+
+.match-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.team-name {
+  flex: 1;
+  font-size: 1.05em;
+  font-weight: 700;
+  color: #f5f5f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-score {
+  font-size: 1.3em;
+  font-weight: 900;
+  color: #F9DC1C;
+  min-width: 22px;
+  text-align: right;
+}
+
+.red-cards {
+  font-size: 0.9em;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* Card bottom row: status left, BTTS indicator right */
+.card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.status {
+  font-size: 0.78em;
+  color: #a0c8a8;
+  font-style: italic;
+}
+
+/* BTTS tick */
+.btts {
+  font-size: 0.85em;
+  font-weight: 800;
+  color: #22c55e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes btts-pop {
+  0%   { transform: scale(0.9); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.score-card.btts-just-hit { animation: btts-pop 700ms ease-out; }
+
+/* Divider between home/away rows */
+.match-divider {
+  height: 1px;
+  background-color: #014d38;
+  margin: 2px 0;
+}
+
+/* Cards container — vertical stack per section */
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Admin / login pages ──────────────────────────────── */
+h1 {
+  text-align: center;
+  color: #F9DC1C;
+  margin: 20px 0 4px;
+}
+
+h2 {
+  color: #F9DC1C;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.version-subtitle {
+  text-align: center;
+  font-size: 0.85em;
+  color: #a0c8a8;
+  margin-bottom: 18px;
+}
+
+.login-container,
+.admin-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 6px;
+  border: 1px solid #027B5B;
+  background-color: #013e2e;
+}
+
+.form-row {
+  margin-bottom: 12px;
+}
+
+.form-row label,
+.assign-row label,
+.assignments .assign-row label {
+  display: block;
+  color: #F9DC1C;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.form-row input,
+.form-row select,
+select,
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #027B5B;
+  border-radius: 4px;
+  font-size: 1em;
+  background-color: #014d38;
+  color: #ffffff;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #027B5B;
+  border-radius: 4px;
+  background-color: #014d38;
+  color: #ffffff;
+  resize: vertical;
+}
+
+.button-row {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.button-row button {
+  background-color: #027B5B;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 24px;
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button-row button:hover {
+  background-color: #02543f;
+}
+
+.match-selector,
+.assign-row {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.match-selector label,
+.assign-row label {
+  min-width: 80px;
+  font-weight: bold;
+  color: #F9DC1C;
+}
+
+.assignments { margin-top: 16px; }
+
+/* Prediction table */
+.pred-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+.pred-table th, .pred-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #027B5B;
+}
+.pred-table th {
+  background-color: #014d38;
+  color: #F9DC1C;
+}
+.pred-table td {
+  background-color: #023f2b;
+  color: #e0e0e0;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 600px) {
+  .site-header .logo { font-size: 1.1em; }
+  .team-name { font-size: 0.95em; }
+  .team-score { font-size: 1.15em; }
+  .button-row button { width: 100%; }
+  .message-hero { font-size: 1em; }
+}

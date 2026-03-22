@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTTS Match Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=v12">
+</head>
+<body>
+  <!-- Bet365-style header bar -->
+  <header class="site-header">
+    <a href="/leaderboard" class="admin-btn admin-btn-left">&#127942; Table</a>
+    <div class="logo">BTTS Match Tracker</div>
+    <a href="/admin" class="admin-btn">&#9881; Admin</a>
+  </header>
+
+  <div class="container">
+    <!-- Optional message hero bar (hidden if blank) -->
+    <div id="message-hero" class="message-hero" style="display:none;"></div>
+
+    <!-- Top Bet section -->
+    <div id="top-section" class="group-section">
+      <div class="section-header"><h2>Top Bet</h2></div>
+      <div id="top-cards" class="cards-container"></div>
+    </div>
+
+    <!-- Bottom Bet section -->
+    <div id="bottom-section" class="group-section">
+      <div class="section-header"><h2>Bottom Bet</h2></div>
+      <div id="bottom-cards" class="cards-container"></div>
+    </div>
+
+    <!-- Sixer Bet section (hidden by default) -->
+    <div id="sixer-section" class="group-section" style="display:none;">
+      <div class="section-header"><h2>Sixer Bet</h2></div>
+      <div id="sixer-cards" class="cards-container"></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/viewer.js') }}?v=v12"></script>
+  <script src="{{ url_for('static', filename='js/btts-bg.js') }}?v=v12"></script>
+</body>
+</html>

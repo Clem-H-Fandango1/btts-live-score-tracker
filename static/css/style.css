@@ -1,0 +1,537 @@
+/*
+ * BTTS Match Tracker — Bet365-flavoured stylesheet v10
+ * Colours: #027B5B (green), #F9DC1C (yellow), #0b2e13 (deep bg)
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #0b2e13;
+  background-image: url('/static/celtic-park.png');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-blend-mode: multiply;
+  color: #f5f5f5;
+  position: relative;
+}
+
+/* Dark green overlay so text stays readable */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 46, 19, 0.40);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Everything sits on top of the overlay */
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header bar ───────────────────────────────────────── */
+.site-header {
+  background-color: #014d38;
+  border-bottom: 3px solid #F9DC1C;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 52px;
+}
+
+.site-header .logo {
+  font-size: 1.35em;
+  font-weight: 900;
+  color: #F9DC1C;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.site-header .logo span {
+  color: #F9DC1C;
+  font-weight: 900;
+}
+
+.admin-btn {
+  position: absolute;
+  right: 16px;
+  background-color: #014d38;
+  color: #F9DC1C;
+  font-size: 0.85em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #027B5B;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  /* Minimum tap target */
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.admin-btn:hover, .admin-btn:active {
+  background-color: #027B5B;
+  color: #F9DC1C;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* ── Page layout ──────────────────────────────────────── */
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 12px 32px;
+}
+
+/* ── Message hero bar ─────────────────────────────────── */
+.message-hero {
+  display: block;
+  text-align: center;
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #F9DC1C;
+  background-color: #013e2e;
+  border: 1px solid #027B5B;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  word-wrap: break-word;
+}
+
+/* ── Section headers (Top Bet / Bottom Bet) ───────────── */
+.group-section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #027B5B;
+  padding: 8px 14px;
+  border-radius: 4px 4px 0 0;
+  margin-bottom: 1px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 800;
+  color: #F9DC1C;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ── Match strip (the main card) ──────────────────────── */
+.score-card {
+  background-color: #023f2b;
+  border: 1px solid #027B5B;
+  border-top: none;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: background-color 0.3s ease;
+  margin-bottom: 2px;
+  border-radius: 0;
+  position: relative;
+}
+
+.score-card:first-child { border-radius: 0; }
+.score-card:last-child  { border-radius: 0 0 4px 4px; }
+
+
+/* Red background for finished games where BTTS did not land */
+.score-card.btts-miss {
+  background-color: #3b0a0a;
+  border-color: #c0392b;
+  box-shadow: inset 3px 0 0 #c0392b;
+}
+
+/* In-progress — yellowy green tint */
+.score-card.in-progress {
+  background-color: #1a3a1a;
+  border-color: #7ab648;
+  box-shadow: inset 3px 0 0 #7ab648;
+}
+
+/* BTTS hit — full glowing green */
+.score-card.btts-hit {
+  background-color: #0a5c32;
+  border-color: #22c55e;
+  box-shadow: inset 3px 0 0 #22c55e;
+}
+
+/* ── Inside the strip ─────────────────────────────────── */
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+/* Friend name pill */
+.friend-box {
+  font-size: 1.05em;
+  font-weight: 800;
+  color: #0b2e13;
+  background-color: #F9DC1C;
+  border-radius: 3px;
+  padding: 3px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* BTTS tick next to name */
+.friend-btts-tick {
+  font-size: 1.3em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Match divider bar */
+.match-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 4px 0;
+}
+
+.match-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 6px;
+}
+
+.team-name {
+  flex: 1;
+  font-size: 1.25em;
+  font-weight: 700;
+  color: #f5f5f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-score {
+  font-size: 1.6em;
+  font-weight: 900;
+  color: #F9DC1C;
+  min-width: 26px;
+  text-align: right;
+}
+
+.red-cards {
+  font-size: 0.9em;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* Card bottom: status + rule stacked centrally */
+.card-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 6px;
+  gap: 3px;
+}
+
+.status {
+  font-size: 0.85em;
+  color: #a0c8a8;
+  font-weight: 600;
+  text-align: center;
+}
+.status.status-live {
+  color: #F9DC1C;
+}
+
+@keyframes btts-pop {
+  0%   { transform: scale(0.9); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.score-card.btts-just-hit { animation: btts-pop 700ms ease-out; }
+
+/* Divider between home/away rows */
+.match-divider {
+  height: 1px;
+  background-color: #014d38;
+  margin: 2px 0;
+}
+
+/* Cards container — vertical stack per section */
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Admin / login pages ──────────────────────────────── */
+h1 {
+  text-align: center;
+  color: #F9DC1C;
+  margin: 20px 0 4px;
+}
+
+h2 {
+  color: #F9DC1C;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.version-subtitle {
+  text-align: center;
+  font-size: 0.85em;
+  color: #a0c8a8;
+  margin-bottom: 18px;
+}
+
+.login-container,
+.admin-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 6px;
+  border: 1px solid #027B5B;
+  background-color: #013e2e;
+}
+
+.form-row {
+  margin-bottom: 12px;
+}
+
+.form-row label,
+.assign-row label,
+.assignments .assign-row label {
+  display: block;
+  color: #F9DC1C;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.form-row input,
+.form-row select,
+select,
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #027B5B;
+  border-radius: 4px;
+  font-size: 1em;
+  background-color: #014d38;
+  color: #ffffff;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #027B5B;
+  border-radius: 4px;
+  background-color: #014d38;
+  color: #ffffff;
+  resize: vertical;
+}
+
+.button-row {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.button-row button {
+  background-color: #027B5B;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 24px;
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button-row button:hover {
+  background-color: #02543f;
+}
+
+.match-selector,
+.assign-row {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.match-selector label,
+.assign-row label {
+  min-width: 80px;
+  font-weight: bold;
+  color: #F9DC1C;
+}
+
+.assignments { margin-top: 16px; }
+
+/* Prediction table */
+.pred-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+.pred-table th, .pred-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #027B5B;
+}
+.pred-table th {
+  background-color: #014d38;
+  color: #F9DC1C;
+}
+.pred-table td {
+  background-color: #023f2b;
+  color: #e0e0e0;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 600px) {
+  .site-header .logo { font-size: 1.1em; }
+  .team-name { font-size: 1.1em; }
+  .team-score { font-size: 1.4em; }
+  .button-row button { width: 100%; }
+  .message-hero { font-size: 1em; }
+}
+
+/* Points badge on score card */
+.points-badge {
+  display: inline-block;
+  font-size: 1.1em;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-radius: 3px;
+  background-color: #014d38;
+  border: 1px solid #027B5B;
+  color: #F9DC1C;
+  min-width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.points-badge.pts-positive { background-color: #0a5c32; border-color: #22c55e; color: #ffffff; }
+.points-badge.pts-negative { background-color: #3b0a0a; border-color: #c0392b; color: #ffffff; }
+.points-badge.pts-zero     { background-color: #014d38; border-color: #027B5B; color: #ffffff; }
+.points-badge.pts-live     { background-color: #3d3100; border-color: #F9DC1C; color: #F9DC1C; }
+.score-rule.rule-live      { color: #F9DC1C; }
+
+/* Rule tooltip under status */
+.score-rule {
+  font-size: 0.82em;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 0;
+  width: 100%;
+  display: block;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+/* ── Leaderboard ──────────────────────────────────────────── */
+.leaderboard {
+  background-color: #013e2e;
+  border: 1px solid #027B5B;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.leaderboard-header {
+  background-color: #027B5B;
+  padding: 7px 14px;
+  font-size: 0.85em;
+  font-weight: 800;
+  color: #F9DC1C;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-bottom: 1px solid #014d38;
+  gap: 10px;
+}
+
+.leaderboard-row:last-child { border-bottom: none; }
+
+.lb-pos {
+  font-size: 0.85em;
+  font-weight: 900;
+  color: #a0c8a8;
+  min-width: 22px;
+  text-align: center;
+}
+
+.lb-pos.first  { color: #FFD700; }
+.lb-pos.second { color: #C0C0C0; }
+.lb-pos.third  { color: #CD7F32; }
+
+.lb-name {
+  flex: 1;
+  font-weight: 700;
+  color: #f5f5f5;
+  font-size: 0.95em;
+}
+
+.lb-today {
+  font-size: 0.8em;
+  color: #a0c8a8;
+  min-width: 52px;
+  text-align: right;
+}
+
+.lb-total {
+  font-size: 1.05em;
+  font-weight: 900;
+  color: #F9DC1C;
+  min-width: 52px;
+  text-align: right;
+}
+
+.admin-btn-left { right: auto; left: 16px; }
+
+/* Bet365 odds badge */
+.odds-badge {
+  display: none;
+  font-size: 0.72em;
+  font-weight: 700;
+  color: #0b2e13;
+  background-color: #F9DC1C;
+  border-radius: 3px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
