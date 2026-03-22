@@ -1925,7 +1925,7 @@ def start_notifier_once():
 start_notifier_once()
 if __name__ == "__main__":
     # When running directly, enable debug mode for easier development.
-    # Listen on port 8194 instead of the previous default of 8000/8094.
+    # Listen on port 8194 instead of the previous default of 8000/8095.
     # The port can be overridden by setting the PORT environment variable.
     port = int(os.environ.get("PORT", 8194))
     app.run(host="0.0.0.0", port=port, debug=True)
