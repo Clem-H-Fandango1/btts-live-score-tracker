@@ -147,6 +147,7 @@ def load_settings() -> Dict[str, str]:
         "telegram_bot_token": DEFAULT_TELEGRAM.get("telegram_bot_token", ""),
         "telegram_chat_id": DEFAULT_TELEGRAM.get("telegram_chat_id", ""),
         "poll_seconds": DEFAULT_TELEGRAM.get("poll_seconds", 30),
+        "wa_enabled": False,
     }
     try:
         with open(SETTINGS_FILE, "r") as f:
@@ -351,6 +352,7 @@ def save_settings(settings: Dict[str, str]) -> None:
         "telegram_bot_token",
         "telegram_chat_id",
         "poll_seconds",
+        "wa_enabled",
     }
     to_save: Dict[str, str] = {}
     for key in allowed_keys:
@@ -1539,6 +1541,34 @@ def tg_send_message(text: str) -> bool:
     except Exception:
         return False
 
+# Full name mapping for WhatsApp @mentions — must match address book names exactly
+WA_FRIEND_NAMES = {
+    "Kenz":   "Martin MacKenzie",
+    "Tartz":  "Martin Coughlan",
+    "Coypoo": "Martin Coyle",
+    "Ginger": "Marc McColgan",
+    "Kooks":  "Craig Coughlan",
+    "Doxy":   "Mark Docherty",
+}
+
+def wa_send_message(text: str) -> bool:
+    """Send a message to the WhatsApp group via the local WA bridge."""
+    cfg = load_settings()
+    if not cfg.get("wa_enabled"):
+        return False
+    jid = os.environ.get("WA_GROUP_JID", "")
+    if not jid:
+        return False
+    try:
+        resp = requests.post(
+            "http://172.17.0.1:8097/send",
+            json={"jid": jid, "message": text},
+            timeout=5
+        )
+        return resp.ok
+    except Exception:
+        return False
+
 def load_notify_state():
     try:
         with open(NOTIFY_STATE_FILE, "r") as f:
@@ -1871,8 +1901,10 @@ def notifier_loop():
                     prev["kickoffSent"] = True
                 if (hs != prev.get("homeScore") or as_ != prev.get("awayScore")) and cur_state == "in":
                     tg_send_message(f"Goal for {friend}: {info['homeTeam']} {hs} {info['awayTeam']} {as_} - {minute}")
+                    wa_send_message(f"⚽️ @{WA_FRIEND_NAMES.get(friend, friend)}")
                 if info["btts"] and not prev.get("bttsSent"):
                     tg_send_message(f"BTTS {friend}: Both teams have scored - {info['homeTeam']} {hs} {info['awayTeam']} {as_} ({minute})")
+                    wa_send_message(f"✅ @{WA_FRIEND_NAMES.get(friend, friend)}")
                     prev["bttsSent"] = True
                 if cur_state == "post" and not prev.get("ftSent"):
                     tg_send_message(f"FT {friend}: {info['homeTeam']} {hs} {info['awayTeam']} {as_}")
@@ -1956,6 +1988,34 @@ def update_telegram():
         return jsonify({"success": False, "message": f"Error saving settings: {ex}"}), 500
     return jsonify({"success": True, "message": "Telegram settings saved successfully."})
 
+
+@app.route("/update_wa", methods=["POST"])
+def update_wa():
+    """Enable or disable WhatsApp notifications."""
+    if not session.get("admin"):
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    enabled = bool(data.get("wa_enabled", False))
+    s = load_settings()
+    s["wa_enabled"] = enabled
+    save_settings(s)
+    return jsonify({"success": True, "wa_enabled": enabled})
+
+@app.route("/wa_status")
+def wa_status():
+    """Return current WhatsApp bridge status and enabled setting."""
+    s = load_settings()
+    bridge_ok = False
+    try:
+        r = requests.get("http://172.17.0.1:8097/status", timeout=3)
+        bridge_ok = r.ok and r.json().get("connected", False)
+    except Exception:
+        pass
+    return jsonify({
+        "wa_enabled": s.get("wa_enabled", False),
+        "bridge_connected": bridge_ok,
+        "group_jid": os.environ.get("WA_GROUP_JID", "(not set)"),
+    })
 
 @app.route("/test_telegram", methods=["POST"])
 def test_telegram():
