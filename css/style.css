@@ -543,3 +543,208 @@ textarea {
 .toggle-slider:before { position:absolute; content:''; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
 input:checked + .toggle-slider { background:#25D366; }
 input:checked + .toggle-slider:before { transform:translateX(22px); }
+
+/* WhatsApp toggle switch */
+.toggle-switch { position:relative; display:inline-block; width:48px; height:26px; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#444; border-radius:26px; transition:.3s; }
+.toggle-slider:before { position:absolute; content:''; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+input:checked + .toggle-slider { background:#25D366; }
+input:checked + .toggle-slider:before { transform:translateX(22px); }
+/* Dev card layout patch matching Martin brief */
+.card-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.name-group {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  flex:1;
+}
+.friend-box {
+  font-size:1.05em;
+  font-weight:800;
+  color:#0b2e13;
+  background:#F9DC1C;
+  border-radius:3px;
+  padding:3px 10px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  white-space:nowrap;
+}
+.btts-tick {
+  color:#22c55e;
+  font-size:1.1em;
+  font-weight:900;
+}
+.status {
+  flex:0 0 auto;
+  text-align:center;
+  color:#fff;
+  font-size:.9em;
+  font-weight:700;
+  min-width:90px;
+}
+.status.status-live { color:#F9DC1C; }
+.points-badge {
+  flex:0 0 auto;
+  min-width:72px;
+  text-align:center;
+  color:#fff !important;
+  font-size:1em;
+  font-weight:900;
+  padding:4px 10px;
+  border-radius:3px;
+}
+.points-badge.pts-live,
+.points-badge.pts-positive,
+.points-badge.pts-negative,
+.points-badge.pts-zero { color:#fff !important; }
+.score-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  margin:4px 0 8px;
+}
+.score-left,.score-right {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+}
+.score-left { justify-content:flex-end; }
+.score-right { justify-content:flex-start; }
+.score-team {
+  color:#fff;
+  font-size:1.1em;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.score-centre {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.score-num,.score-sep {
+  color:#F9DC1C;
+  font-size:1.7em;
+  font-weight:900;
+  line-height:1;
+  text-align:center;
+}
+.card-footer {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-top:2px;
+}
+.score-rule {
+  width:100%;
+  text-align:center;
+  color:#fff;
+  font-size:.85em;
+  font-weight:600;
+}
+
+
+/* v16 layout patch */
+.score-card{padding:10px 14px 12px;}
+.card-header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;margin-bottom:8px;}
+.name-group{display:flex;align-items:center;gap:8px;min-width:0;justify-self:start;}
+.friend-box{display:inline-flex;align-items:center;height:28px;line-height:28px;}
+.btts-tick{display:inline-flex;align-items:center;color:#22c55e;font-size:1.05em;font-weight:900;}
+.status{justify-self:center;text-align:center;color:#fff;font-size:.88em;font-weight:700;min-width:64px;}
+.status.status-live{color:#F9DC1C;}
+.points-badge,.points-badge.pts-live,.points-badge.pts-positive,.points-badge.pts-negative,.points-badge.pts-zero{justify-self:end;color:#fff!important;min-width:74px;padding:4px 8px;font-size:.95em;}
+.score-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:14px;margin:0;}
+.score-left,.score-right{display:flex;align-items:center;gap:6px;min-width:0;}
+.score-left{justify-content:flex-end;}
+.score-right{justify-content:flex-start;}
+.score-team{color:#fff;font-size:1.02em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.score-centre{display:flex;align-items:center;justify-content:center;gap:6px;min-width:92px;}
+.score-num,.score-sep{color:#F9DC1C;font-size:1.85em;font-weight:900;line-height:1;text-align:center;}
+.red-cards{font-size:.8em;line-height:1;}
+.card-footer{display:block;margin-top:8px;}
+.score-rule{display:block;width:100%;text-align:center;color:#fff;font-size:.82em;font-weight:600;line-height:1.25;}
+
+.status{justify-self:center;margin:0 auto;text-align:center;display:block;}
+
+.score-team{font-size:1.12em;letter-spacing:0;}
+.score-centre{gap:4px;min-width:84px;}
+.score-num,.score-sep{font-size:1.55em;letter-spacing:0;}
+
+.card-header{grid-template-columns:1fr auto 1fr;}
+.name-group{justify-self:start;}
+.status{grid-column:2;justify-self:center;width:max-content;min-width:0;}
+.points-badge{grid-column:3;justify-self:end;}
+
+.score-row,.score-left,.score-right,.score-centre{align-items:center;}
+.score-team,.score-num,.score-sep,.red-cards{display:inline-flex;align-items:center;line-height:1;}
+
+.score-card.btts-miss{background-color:#023f2b !important;border-color:#027B5B !important;box-shadow:none !important;}
+.score-card.in-progress{background-color:#0f4d2f !important;border-color:#4e9d63 !important;box-shadow:inset 3px 0 0 #4e9d63 !important;}
+.score-card.btts-hit{background-color:#0f6a3d !important;border-color:#22c55e !important;box-shadow:inset 3px 0 0 #22c55e !important;}
+
+
+/* v18 tighter score-centred name alignment */
+.score-row{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:6px !important;
+  width:100%;
+}
+.score-left,.score-right{
+  flex:0 1 auto;
+  min-width:0;
+  max-width:calc(50% - 36px);
+}
+.score-left{
+  justify-content:flex-end !important;
+  text-align:right;
+}
+.score-right{
+  justify-content:flex-start !important;
+  text-align:left;
+}
+.score-centre{
+  flex:0 0 auto;
+  min-width:64px;
+  justify-content:center !important;
+  gap:1px !important;
+}
+.score-left .score-team{margin-right:0 !important;}
+.score-right .score-team{margin-left:0 !important;}
+.score-team{
+  max-width:100%;
+}
+
+
+/* v19 portrait mobile score tightening */
+@media (max-width: 600px) and (orientation: portrait) {
+  .score-row {
+    gap: 4px !important;
+  }
+  .score-left, .score-right {
+    max-width: calc(50% - 32px);
+  }
+  .score-centre {
+    min-width: 56px;
+    gap: 0 !important;
+  }
+  .score-team {
+    font-size: 1.02em;
+  }
+  .score-num, .score-sep {
+    font-size: 1.42em;
+  }
+}

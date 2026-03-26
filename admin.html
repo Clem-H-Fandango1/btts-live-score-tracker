@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTTS Match Tracker Admin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=v9">
+</head>
+<body>
+  <div class="container">
+    <h1>BTTS Match Tracker Admin</h1>
+    <div class="version-subtitle">Version: {{ app_version }}</div>
+    <!-- Login section -->
+    <div id="login-section" class="login-container">
+      <h2>Admin Login</h2>
+      <form id="login-form">
+        <div class="form-row">
+          <label for="password">Password</label>
+          <input type="password" id="password" required>
+        </div>
+        <div class="button-row">
+          <button type="submit">Login</button>
+        </div>
+      </form>
+      <p id="login-error" style="color:red; display:none;">Invalid password. Please try again.</p>
+    </div>
+    <!-- Admin assignment section -->
+    <div id="admin-section" class="admin-container" style="display:none;">
+      <h2>Assign Matches</h2>
+      <p>
+        Load upcoming matches for the next four days, assign each participant a match and choose whether they belong to the Top or Bottom bet (or Sixer bet). You can also customise the site title and add an optional message for your friends. Then save your changes.
+      </p>
+      <!-- Site title and message inputs -->
+      <div class="form-row">
+        <label for="site-title">Site Title</label>
+        <input type="text" id="site-title" placeholder="BTTS Tracker">
+      </div>
+      <div class="form-row">
+        <label for="other-message">Any Other Business</label>
+        <textarea id="other-message" rows="3" placeholder="Enter a personal message (optional)"></textarea>
+      </div>
+      <!-- Button to load upcoming matches -->
+      <div class="button-row">
+        <button id="search-button">Load Upcoming Matches</button>
+      </div>
+      <!-- Assignment and group selection section -->
+      <div class="assignments" id="assignments-container" style="display:none;">
+        <div id="assign-rows"></div>
+        <div class="button-row" style="margin-top:15px; display:flex; gap:12px; justify-content:center;">
+          <button id="save-button">Save</button>
+          <button id="save-go-button" style="background-color:#c0392b;">Save &amp; Return</button>
+        </div>
+      </div>
+      <p id="save-message" style="color:#4ade80; display:none; text-align:center; margin-top:10px;">Changes saved successfully.</p>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/admin.js') }}?v=v12"></script>
+</body>
+</html>

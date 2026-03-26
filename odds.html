@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTTS Odds</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=v9">
+</head>
+<body>
+  <div class="container">
+    <h1>BTTS Odds</h1>
+    <!-- Login section for odds page -->
+    <div id="odds-login-section" class="login-container">
+      <h2>Login</h2>
+      <form id="odds-login-form">
+        <div class="form-row">
+          <label for="odds-password">Password</label>
+          <input type="password" id="odds-password" required>
+        </div>
+        <div class="button-row">
+          <button type="submit">Login</button>
+        </div>
+      </form>
+      <p id="odds-login-error" style="color:red; display:none;">Invalid password. Please try again.</p>
+    </div>
+    <!-- Odds predictions section -->
+    <div id="odds-section" class="admin-container" style="display:none;">
+      <h2>Top BTTS Predictions</h2>
+      <p>These predictions are based on recent scoring patterns.  Click the button below to refresh the historical data before obtaining new predictions.</p>
+      <div class="button-row">
+        <button id="update-results-button">Refresh Data</button>
+      </div>
+      <table id="predictions-table" class="pred-table">
+        <thead>
+          <tr><th>Match</th><th>League</th><th>BTTS Probability</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/odds.js') }}?v=v1"></script>
+</body>
+</html>

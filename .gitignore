@@ -2,5 +2,7 @@ __pycache__/
 *.pyc
 .env
 .env.*
+settings.json
+notify_state.json
 backups/
 *.log

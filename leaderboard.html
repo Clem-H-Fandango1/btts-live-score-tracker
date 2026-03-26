@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTTS Leaderboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=v12">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="admin-btn" style="left:16px; right:auto;">&#8592; Back</a>
+    <div class="logo">BTTS<span> Leaderboard</span></div>
+    <a href="/admin" class="admin-btn">&#9881; Admin</a>
+  </header>
+
+  <div class="container">
+    <div id="leaderboard-wrap" style="margin-top:16px;"></div>
+    <p id="lb-updated" style="text-align:center; color:#a0c8a8; font-size:0.8em; margin-top:8px;"></p>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/leaderboard.js') }}?v=v12"></script>
+</body>
+</html>
