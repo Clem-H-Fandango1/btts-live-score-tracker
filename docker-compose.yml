@@ -1,0 +1,18 @@
+services:
+  btts-app:
+    build: .
+    container_name: btts_app
+    ports:
+      - "8094:8094"
+    env_file:
+      - .env
+    volumes:
+      - ./assignments.json:/app/assignments.json
+      - ./groups.json:/app/groups.json
+      - ./next_groups.json:/app/next_groups.json
+      - ./results.json:/app/results.json
+      - ./fixtures.json:/app/fixtures.json
+      - ./season_points.json:/app/season_points.json
+      - ./season_stats.json:/app/season_stats.json
+      - ./game_history.json:/app/game_history.json
+    restart: unless-stopped
