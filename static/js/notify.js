@@ -1,75 +1,87 @@
-document.getElementById("save-telegram").addEventListener("click", async function () {
-  const token = document.getElementById("token").value.trim();
-  const chatId = document.getElementById("chat_id").value.trim();
-  const statusElem = document.getElementById("save-status");
+(function () {
+  const enabled = document.getElementById('wa_enabled');
+  const enabledText = document.getElementById('wa_enabled_text');
+  const targetMode = document.getElementById('wa_target_mode');
+  const proofEnabled = document.getElementById('proof_enabled');
+  const proofTarget = document.getElementById('proof_target');
+  const proofBridge = document.getElementById('proof_bridge');
+  const saveBtn = document.getElementById('wa_save_btn');
+  const refreshBtn = document.getElementById('wa_refresh_btn');
+  const testBtn = document.getElementById('wa_test_btn');
+  const msg = document.getElementById('wa_msg');
 
-  if (!token || !chatId) {
-    statusElem.textContent = "Both fields are required.";
-    statusElem.style.color = "red";
-    statusElem.style.display = "block";
-    return;
+  function showMsg(text, color) {
+    msg.textContent = text;
+    msg.style.color = color || '';
+    msg.style.display = 'block';
   }
 
-  try {
-    const resp = await fetch("/update_telegram", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: token, chat_id: chatId })
-    });
-    const data = await resp.json();
-    statusElem.textContent = data.message || (data.success ? "Saved." : "Failed.");
-    statusElem.style.color = data.success ? "lightgreen" : "red";
-    statusElem.style.display = "block";
-  } catch (err) {
-    statusElem.textContent = "Network or server error while saving.";
-    statusElem.style.color = "red";
-    statusElem.style.display = "block";
+  function labelForMode(mode) {
+    return ({ group: 'Group', me: 'Martin only', both: 'Both', none: 'Nobody' })[mode] || mode;
   }
-});
 
+  async function loadStatus() {
+    const r = await fetch('/wa_status');
+    const d = await r.json();
 
-// Send test notification
-(function(){
-  const btn = document.getElementById("send-test");
-  if (!btn) return;
-  const testStatus = document.getElementById("test-status");
-  btn.addEventListener("click", async function(){
-    const text = (document.getElementById("test_text")?.value || "BTTS Test Notification ✅").trim();
-    testStatus.textContent = "Sending…";
-    testStatus.style.color = "";
-    testStatus.style.display = "block";
+    enabled.checked = d.wa_enabled === true;
+    enabledText.textContent = enabled.checked ? 'On' : 'Off';
+    enabledText.style.color = enabled.checked ? '#25D366' : '#aaa';
+
+    const mode = d.wa_target_mode || (d.wa_test_mode ? 'me' : 'group');
+    targetMode.value = mode;
+
+    proofEnabled.textContent = d.wa_enabled ? 'ON' : 'OFF';
+    proofEnabled.style.color = d.wa_enabled ? '#25D366' : '#aaa';
+
+    proofTarget.textContent = labelForMode(mode);
+    proofBridge.textContent = d.bridge_connected ? 'Connected' : 'Disconnected';
+    proofBridge.style.color = d.bridge_connected ? '#25D366' : 'red';
+  }
+
+  saveBtn.addEventListener('click', async function () {
     try {
-      const resp = await fetch("/test_telegram", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ text })
+      const payload = {
+        wa_enabled: enabled.checked === true,
+        wa_target_mode: targetMode.value,
+      };
+      const r = await fetch('/update_wa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-      const data = await resp.json();
-      testStatus.textContent = data.message || (data.success ? "Sent." : "Failed.");
-      testStatus.style.color = data.success ? "lightgreen" : "red";
+      const d = await r.json();
+      if (!d.success) throw new Error(d.message || 'Save failed');
+      await loadStatus();
+      showMsg('Saved. Backend proof updated.', 'lightgreen');
     } catch (e) {
-      testStatus.textContent = "Network error while sending test.";
-      testStatus.style.color = "red";
+      showMsg(e.message || 'Save failed.', 'red');
     }
   });
-})();
 
-
-// Status panel refresh
-(function(){
-  const btn = document.getElementById("refresh-status");
-  const pre = document.getElementById("status-json");
-  if (!btn || !pre) return;
-  async function refresh(){
-    try{
-      const resp = await fetch("/telegram_status");
-      const data = await resp.json();
-      pre.textContent = JSON.stringify(data, null, 2);
-    }catch(e){
-      pre.textContent = "Error fetching status.";
+  refreshBtn.addEventListener('click', async function () {
+    try {
+      await loadStatus();
+      showMsg('Refreshed from backend.', '#aaa');
+    } catch (e) {
+      showMsg('Refresh failed.', 'red');
     }
-  }
-  btn.addEventListener("click", refresh);
-  // auto-load on page open
-  refresh();
+  });
+
+  testBtn.addEventListener('click', async function () {
+    try {
+      const r = await fetch('/wa_test', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      const d = await r.json();
+      showMsg(d.message || (d.success ? 'Test sent.' : 'Test failed.'), d.success ? 'lightgreen' : 'red');
+    } catch (e) {
+      showMsg('Test failed.', 'red');
+    }
+  });
+
+  enabled.addEventListener('change', function () {
+    enabledText.textContent = enabled.checked ? 'On' : 'Off';
+    enabledText.style.color = enabled.checked ? '#25D366' : '#aaa';
+  });
+
+  loadStatus().catch(() => showMsg('Could not load WhatsApp status.', 'red'));
 })();

@@ -1,0 +1,103 @@
+/* Dev card layout patch matching Martin brief */
+.card-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.name-group {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  flex:1;
+}
+.friend-box {
+  font-size:1.05em;
+  font-weight:800;
+  color:#0b2e13;
+  background:#F9DC1C;
+  border-radius:3px;
+  padding:3px 10px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  white-space:nowrap;
+}
+.btts-tick {
+  color:#22c55e;
+  font-size:1.1em;
+  font-weight:900;
+}
+.status {
+  flex:0 0 auto;
+  text-align:center;
+  color:#fff;
+  font-size:.9em;
+  font-weight:700;
+  min-width:90px;
+}
+.status.status-live { color:#F9DC1C; }
+.points-badge {
+  flex:0 0 auto;
+  min-width:72px;
+  text-align:center;
+  color:#fff !important;
+  font-size:1em;
+  font-weight:900;
+  padding:4px 10px;
+  border-radius:3px;
+}
+.points-badge.pts-live,
+.points-badge.pts-positive,
+.points-badge.pts-negative,
+.points-badge.pts-zero { color:#fff !important; }
+.score-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  margin:4px 0 8px;
+}
+.score-left,.score-right {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+}
+.score-left { justify-content:flex-end; }
+.score-right { justify-content:flex-start; }
+.score-team {
+  color:#fff;
+  font-size:1.1em;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.score-centre {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.score-num,.score-sep {
+  color:#F9DC1C;
+  font-size:1.7em;
+  font-weight:900;
+  line-height:1;
+  text-align:center;
+}
+.card-footer {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-top:2px;
+}
+.score-rule {
+  width:100%;
+  text-align:center;
+  color:#fff;
+  font-size:.85em;
+  font-weight:600;
+}

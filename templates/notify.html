@@ -3,68 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Notification Setup</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ app_version }}">
+  <title>WhatsApp Alerts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=notifyclean1">
 </head>
 <body>
   <div class="container">
-    <h1>Telegram Notification Setup</h1>
-    <p class="description">
-      Use this page to enable Telegram notifications for match events.
-    </p>
-    <ol>
-      <li>
-        <strong>Create a bot</strong> via <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>:
-        send <code>/newbot</code>, follow prompts, then copy your <em>bot token</em>.
-      </li>
-      <li>
-        <strong>Create a Telegram group</strong> and <em>add your bot to the group</em>. Send any message in the group.
-      </li>
-      <li>
-        <strong>Find the chat ID</strong>: open
-        <code>https://api.telegram.org/bot&lt;your token&gt;/getUpdates</code> in a browser after sending the message.
-        In the JSON, look for <code>"chat":{"id": ... }</code> — that's your group chat ID (often negative, e.g. <code>-1001234567890</code>).
-        Alternatively, use <a href="https://t.me/RawDataBot" target="_blank" rel="noopener">@RawDataBot</a>.
-      </li>
-      <li>
-        <strong>Paste the values below</strong> and click <em>Save Telegram Settings</em>. The app will write them to <code>settings.json</code>.
-      </li>
-    </ol>
+    <h1>WhatsApp Alerts</h1>
+    <p class="description">Simple controls for BTTS WhatsApp messages.</p>
 
-    <div class="form-row">
-      <label for="token">Bot Token</label>
-      <input type="text" id="token" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11">
+    <div class="form-row" style="align-items:center;gap:12px;">
+      <label for="wa_enabled" style="margin:0;min-width:120px;">Alerts</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="wa_enabled">
+        <span class="toggle-slider"></span>
+      </label>
+      <strong id="wa_enabled_text">Loading…</strong>
     </div>
-    <div class="form-row">
-      <label for="chat_id">Chat ID</label>
-      <input type="text" id="chat_id" placeholder="-1001234567890">
+
+    <div class="form-row" style="margin-top:18px;">
+      <label for="wa_target_mode" style="min-width:120px;">Send to</label>
+      <select id="wa_target_mode" style="padding:10px 12px;border-radius:8px;min-width:220px;">
+        <option value="group">Group</option>
+        <option value="me">Martin only</option>
+        <option value="both">Both</option>
+        <option value="none">Nobody</option>
+      </select>
     </div>
+
+    <div class="status-box" style="margin-top:18px;line-height:1.7;">
+      <div><strong>Saved status:</strong> <span id="proof_enabled">Loading…</span></div>
+      <div><strong>Saved destination:</strong> <span id="proof_target">Loading…</span></div>
+      <div><strong>Bridge:</strong> <span id="proof_bridge">Checking…</span></div>
+    </div>
+
+    <p class="description" style="margin-top:12px;">Proof shown above is the backend's saved state, not just the switch position.</p>
+
     <div class="button-row">
-      <button id="save-telegram">Save Telegram Settings</button>
+      <button id="wa_save_btn">Save</button>
+      <button id="wa_refresh_btn">Refresh</button>
+      <button id="wa_test_btn">Send test to Martin</button>
     </div>
-    <p id="save-status" style="display:none;"></p>
-
-<hr>
-<h2>Current Telegram Status</h2>
-<div id="status-panel" class="status-box">
-  <pre id="status-json" style="white-space:pre-wrap;"></pre>
-</div>
-<div class="button-row">
-  <button id="refresh-status">Refresh Status</button>
-</div>
-
+    <p id="wa_msg" style="display:none;"></p>
   </div>
 
-<hr>
-<div class="form-row">
-  <label for="test_text">Send a test message (optional)</label>
-  <input type="text" id="test_text" placeholder="BTTS Test Notification ✅">
-</div>
-<div class="button-row">
-  <button id="send-test">Send Test Notification</button>
-</div>
-<p id="test-status" style="display:none;"></p>
-
-<script src="{{ url_for('static', filename='js/notify.js') }}?v={{ app_version }}"></script>
+  <script src="{{ url_for('static', filename='js/notify.js') }}?v=notifyclean1"></script>
 </body>
 </html>

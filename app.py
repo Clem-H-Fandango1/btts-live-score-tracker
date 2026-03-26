@@ -147,6 +147,9 @@ def load_settings() -> Dict[str, str]:
         "telegram_bot_token": DEFAULT_TELEGRAM.get("telegram_bot_token", ""),
         "telegram_chat_id": DEFAULT_TELEGRAM.get("telegram_chat_id", ""),
         "poll_seconds": DEFAULT_TELEGRAM.get("poll_seconds", 30),
+        "wa_enabled": False,
+        "wa_test_mode": False,
+        "wa_target_mode": "group",
     }
     try:
         with open(SETTINGS_FILE, "r") as f:
@@ -159,6 +162,12 @@ def load_settings() -> Dict[str, str]:
     for key, value in data.items():
         if value not in (None, ""):
             merged[key] = value
+    for key in ("telegram_enabled", "wa_enabled", "wa_test_mode"):
+        val = merged.get(key, False)
+        if isinstance(val, str):
+            merged[key] = val.strip().lower() in ("1", "true", "yes", "on")
+        else:
+            merged[key] = bool(val)
     return merged
 
 
@@ -351,14 +360,20 @@ def save_settings(settings: Dict[str, str]) -> None:
         "telegram_bot_token",
         "telegram_chat_id",
         "poll_seconds",
+        "wa_enabled",
+        "wa_test_mode",
+        "wa_target_mode",
     }
     to_save: Dict[str, str] = {}
     for key in allowed_keys:
         val = settings.get(key)
         if val not in (None, ""):
-            to_save[key] = val
+            if key in ("telegram_enabled", "wa_enabled", "wa_test_mode"):
+                to_save[key] = bool(val)
+            else:
+                to_save[key] = val
     with open(SETTINGS_FILE, "w") as f:
-        json.dump(to_save, f)
+        json.dump(to_save, f, indent=2)
 
 # In-memory cache mapping event IDs to their corresponding league code.
 # This allows the API to look up the correct league when retrieving
@@ -1539,6 +1554,34 @@ def tg_send_message(text: str) -> bool:
     except Exception:
         return False
 
+# Full name mapping for WhatsApp @mentions — must match address book names exactly
+WA_FRIEND_NAMES = {
+    "Kenz":   "Martin MacKenzie",
+    "Tartz":  "Martin Coughlan",
+    "Coypoo": "Martin Coyle",
+    "Ginger": "Marc McColgan",
+    "Kooks":  "Craig Coughlan",
+    "Doxy":   "Mark Docherty",
+}
+
+def wa_send_message(text: str) -> bool:
+    """Send a WhatsApp message either to the live group or Martin in test mode."""
+    cfg = load_settings()
+    if not cfg.get("wa_enabled"):
+        return False
+    jid = os.environ.get("WA_TEST_JID", "447590499626@s.whatsapp.net") if cfg.get("wa_test_mode") else os.environ.get("WA_GROUP_JID", "")
+    if not jid:
+        return False
+    try:
+        resp = requests.post(
+            "http://172.17.0.1:8097/send",
+            json={"jid": jid, "message": text},
+            timeout=5
+        )
+        return resp.ok
+    except Exception:
+        return False
+
 def load_notify_state():
     try:
         with open(NOTIFY_STATE_FILE, "r") as f:
@@ -1871,8 +1914,10 @@ def notifier_loop():
                     prev["kickoffSent"] = True
                 if (hs != prev.get("homeScore") or as_ != prev.get("awayScore")) and cur_state == "in":
                     tg_send_message(f"Goal for {friend}: {info['homeTeam']} {hs} {info['awayTeam']} {as_} - {minute}")
+                    wa_send_message(f"⚽️ @{WA_FRIEND_NAMES.get(friend, friend)}")
                 if info["btts"] and not prev.get("bttsSent"):
                     tg_send_message(f"BTTS {friend}: Both teams have scored - {info['homeTeam']} {hs} {info['awayTeam']} {as_} ({minute})")
+                    wa_send_message(f"✅ @{WA_FRIEND_NAMES.get(friend, friend)}")
                     prev["bttsSent"] = True
                 if cur_state == "post" and not prev.get("ftSent"):
                     tg_send_message(f"FT {friend}: {info['homeTeam']} {hs} {info['awayTeam']} {as_}")
@@ -1925,7 +1970,7 @@ def start_notifier_once():
 start_notifier_once()
 if __name__ == "__main__":
     # When running directly, enable debug mode for easier development.
-    # Listen on port 8194 instead of the previous default of 8000/8095.
+    # Listen on port 8194 instead of the previous default of 8000/8094.
     # The port can be overridden by setting the PORT environment variable.
     port = int(os.environ.get("PORT", 8194))
     app.run(host="0.0.0.0", port=port, debug=True)
@@ -1957,6 +2002,71 @@ def update_telegram():
     return jsonify({"success": True, "message": "Telegram settings saved successfully."})
 
 
+@app.route("/update_wa", methods=["POST"])
+def update_wa():
+    """Enable or disable WhatsApp notifications."""
+    if not session.get("admin"):
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    s = load_settings()
+    if "wa_enabled" in data:
+        s["wa_enabled"] = bool(data.get("wa_enabled", False))
+    if "wa_target_mode" in data:
+        mode = str(data.get("wa_target_mode", "group")).strip().lower()
+        if mode in ("none", "me", "group", "both"):
+            s["wa_target_mode"] = mode
+            s["wa_test_mode"] = (mode == "me")
+    elif "wa_test_mode" in data:
+        s["wa_test_mode"] = bool(data.get("wa_test_mode", False))
+        s["wa_target_mode"] = "me" if s["wa_test_mode"] else "group"
+    save_settings(s)
+    return jsonify({"success": True, "wa_enabled": bool(s.get("wa_enabled", False)), "wa_test_mode": bool(s.get("wa_test_mode", False)), "wa_target_mode": s.get("wa_target_mode", "group")})
+
+@app.route("/wa_status")
+def wa_status():
+    """Return current WhatsApp bridge status and enabled setting."""
+    s = load_settings()
+    bridge_ok = False
+    try:
+        r = requests.get("http://172.17.0.1:8097/status", timeout=3)
+        bridge_ok = r.ok and r.json().get("connected", False)
+    except Exception:
+        pass
+    mode = s.get("wa_target_mode", "group")
+    target_label = {"none": "None", "me": "Martin direct", "group": "Carry On Up The Kenzie", "both": "Both"}.get(mode, "Carry On Up The Kenzie")
+    return jsonify({
+        "wa_enabled": bool(s.get("wa_enabled", False)),
+        "wa_test_mode": bool(s.get("wa_test_mode", False)),
+        "wa_target_mode": mode,
+        "bridge_connected": bridge_ok,
+        "current_target": target_label,
+        "proof": {
+            "wa_enabled": bool(s.get("wa_enabled", False)),
+            "wa_target_mode": mode,
+            "settings_file": SETTINGS_FILE,
+        }
+    })
+
+@app.route("/wa_test", methods=["POST"])
+def wa_test():
+    """Send a WhatsApp test message directly to Martin, never to the group."""
+    if not session.get("admin"):
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+    test_jid = os.environ.get("WA_TEST_JID", "447590499626@s.whatsapp.net").strip() or "447590499626@s.whatsapp.net"
+    try:
+        r = requests.post(
+            "http://172.17.0.1:8097/send",
+            json={"jid": test_jid, "message": "🧪 BTTS WA test: Martin Coyle: Fulham 1-0 Burnley"},
+            timeout=5,
+        )
+        data = r.json()
+        if r.ok and data.get("ok"):
+            return jsonify({"success": True, "message": "Test message sent directly to Martin."})
+        return jsonify({"success": False, "message": f"Bridge send failed: {data}"}), 502
+    except Exception as ex:
+        return jsonify({"success": False, "message": f"Error sending WhatsApp test: {ex}"}), 500
+
 @app.route("/test_telegram", methods=["POST"])
 def test_telegram():
     try:
@@ -1973,8 +2083,10 @@ def test_telegram():
             return jsonify({"success": False, "message": "Missing token or chat_id. Save them first on the Notify page."}), 400
         data = request.get_json(silent=True) or {}
         text = (data.get("text") or "BTTS Test Notification ✅").strip()
+        # Safety: test messages always go to Martin directly unless explicitly changed in code.
+        test_chat_id = os.environ.get("TEST_TELEGRAM_CHAT_ID", "1419645400").strip() or "1419645400"
         url = f"https://api.telegram.org/bot{token}/sendMessage"
-        payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
+        payload = {"chat_id": test_chat_id, "text": text, "parse_mode": "HTML"}
         r = requests.post(url, json=payload, timeout=10)
         ok = False
         msg = f"HTTP {r.status_code}"
